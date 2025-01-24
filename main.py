@@ -61,6 +61,20 @@ class SimpleCRUDHandler(BaseHTTPRequestHandler):
         else:
             self._set_headers(404)
             self.wfile.write(json.dumps({"error": "Invalid endpoint"}).encode())
+
+    def do_DELETE(self):
+        global data_store
+        if self.path.startswith("/items/"):
+            item_id = self.path.split("/")[-1]
+            if item_id.isdigit() and int(item_id) in data_store:
+                del data_store[int(item_id)]
+                self._set_headers(204)
+            else:
+                self._set_headers(404)
+                self.wfile.write(json.dumps({"error": "Item not found"}).encode())
+        else:
+            self._set_headers(404)
+            self.wfile.write(json.dumps({"error": "Invalid endpoint"}).encode())
     
    
 if __name__ == "__main__":
