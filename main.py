@@ -27,6 +27,21 @@ class SimpleCRUDHandler(BaseHTTPRequestHandler):
         else:
             self._set_headers(404)
             self.wfile.write(json.dumps({"error": "Invalid endpoint"}).encode())
+    def do_POST(self):
+        global data_store, next_id
+        if self.path == "/items":
+            content_length = int(self.headers["Content-Length"])
+            post_data = json.loads(self.rfile.read(content_length).decode())
+            
+            data_store[next_id] = post_data
+            response = {"id": next_id, "data": post_data}
+            next_id += 1
+            
+            self._set_headers(201)
+            self.wfile.write(json.dumps(response).encode())
+        else:
+            self._set_headers(404)
+            self.wfile.write(json.dumps({"error": "Invalid endpoint"}).encode())
     
    
 if __name__ == "__main__":
