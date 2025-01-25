@@ -33,17 +33,17 @@ class SimpleCRUDHandler(BaseHTTPRequestHandler):
         if self.path == "/items":
             content_length = int(self.headers["Content-Length"])
             post_data = json.loads(self.rfile.read(content_length).decode())
-            
+
             data_store[next_id] = post_data
             response = {"id": next_id, "data": post_data}
             next_id += 1
-            
+
             self._set_headers(201)
             self.wfile.write(json.dumps(response).encode())
         else:
             self._set_headers(404)
             self.wfile.write(json.dumps({"error": "Invalid endpoint"}).encode())
-    
+
     def do_PUT(self):
         global data_store
         if self.path.startswith("/items/"):
@@ -51,7 +51,7 @@ class SimpleCRUDHandler(BaseHTTPRequestHandler):
             if item_id.isdigit() and int(item_id) in data_store:
                 content_length = int(self.headers["Content-Length"])
                 put_data = json.loads(self.rfile.read(content_length).decode())
-                
+
                 data_store[int(item_id)] = put_data
                 self._set_headers()
                 self.wfile.write(json.dumps({"id": int(item_id), "data": put_data}).encode())
@@ -75,8 +75,8 @@ class SimpleCRUDHandler(BaseHTTPRequestHandler):
         else:
             self._set_headers(404)
             self.wfile.write(json.dumps({"error": "Invalid endpoint"}).encode())
-    
-   
+
+
 if __name__ == "__main__":
     server_address = ('', 8080)
     httpd = HTTPServer(server_address, SimpleCRUDHandler)
